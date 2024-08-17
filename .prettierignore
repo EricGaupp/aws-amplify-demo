@@ -1,0 +1,10 @@
+node_modules
+package-lock.json
+
+#Amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+
+#Husky
+.husky
