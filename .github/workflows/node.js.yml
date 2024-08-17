@@ -1,7 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Lint and Check Formatting
+name: Node.js CI
 
 on:
   push:
@@ -21,9 +21,11 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
+    - name: Clean install and build
+      run: |
+        npm ci
+        npm run build --if-present
     - name: Check Formatting
-    - run: npm run prettier:check
+      run: npm run prettier:check
     - name: Run Unit Tests
-    - run: npm test
+      run: npm test
