@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "development", "master" ]
+    branches: [ "development" ]
   pull_request:
-    branches: [ "development", "master" ]
+    branches: [ "development" ]
 
 jobs:
   build:
@@ -21,10 +21,14 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'npm'
-    - name: Clean install and build
-      run: |
-        npm ci
-        npm run build --if-present
+    - name: Clean install
+      run: npm ci
+    - name: Generate Amplify Outputs
+      env:
+        AWS_APP_ID_DEVELOPMENT: ${{ secrets.AWS_APP_ID_DEVELOPMENT }}
+      run: npx ampx generate outputs --branch development --app-id "$AWS_APP_ID_DEVELOPMENT"
+    - name: Build
+      run: npm run build --if-present
     - name: Check Formatting
       run: npm run prettier:check
     - name: Run Unit Tests
