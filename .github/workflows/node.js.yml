@@ -8,14 +8,30 @@ on:
     branches: [ "development" ]
   pull_request:
     branches: [ "development" ]
-
+  
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_APP_ID_DEVELOPMENT: ${{ secrets.AWS_APP_ID_DEVELOPMENT }}
+      AWS_REGION: "us-east-1"
+
     steps:
     - uses: actions/checkout@v4
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::314146338510:role/GitHubAction-AssumeRoleWithAction
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+        aws-region: ${{ env.AWS_REGION }}
+    - name: Sts GetCallerIdentity
+      run: aws sts get-caller-identity
     - name: Use Node.js 20
       uses: actions/setup-node@v4
       with:
@@ -23,9 +39,9 @@ jobs:
         cache: 'npm'
     - name: Clean install
       run: npm ci
+    - name: STS get-caller-identity
+      run: aws sts get-caller-identity
     - name: Generate Amplify Outputs
-      env:
-        AWS_APP_ID_DEVELOPMENT: ${{ secrets.AWS_APP_ID_DEVELOPMENT }}
       run: npx ampx generate outputs --branch development --app-id "$AWS_APP_ID_DEVELOPMENT"
     - name: Build
       run: npm run build --if-present
