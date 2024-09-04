@@ -29,8 +29,6 @@ jobs:
                   role-to-assume: arn:aws:iam::314146338510:role/GitHubAction-AssumeRoleWithAction
                   role-session-name: GitHub_to_AWS_via_FederatedOIDC
                   aws-region: ${{ env.AWS_REGION }}
-            - name: Sts GetCallerIdentity
-              run: aws sts get-caller-identity
             - name: Use Node.js 20
               uses: actions/setup-node@v4
               with:
@@ -44,5 +42,7 @@ jobs:
               run: npm run build --if-present
             - name: Check Formatting
               run: npm run prettier:check
+            - name: Lint
+              run: npm run lint
             - name: Run Unit Tests
               run: npm test
